@@ -32,9 +32,9 @@ class Call:
 
     def decode_output(self, output, success: Optional[bool]=None):
         if success is None:
-            apply_handler = lambda handler, value: handler(value)
+            apply_handler = lambda handler, value, decimals: handler(value, decimals)
         else:
-            apply_handler = lambda handler, value: handler(success, value)
+            apply_handler = lambda handler, value, decimals: handler(success, value, decimals)
 
         if success is None or success:
             try:
@@ -46,8 +46,8 @@ class Call:
 
         if self.returns:
             return {
-                name: apply_handler(handler, value) if handler else value
-                for (name, handler), value
+                name: apply_handler(handler, value, decimals) if handler else value
+                for (name, handler, decimals), value
                 in zip(self.returns, decoded)
             }
         else:
