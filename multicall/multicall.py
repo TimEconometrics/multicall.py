@@ -32,19 +32,19 @@ class Multicall:
             returns=None,
             _w3=self.w3,
             block_id=self.block_id,
-            state_override_code=MULTICALL2_BYTECODE
+            state_override_code=None
         )
 
         if self.require_success is True:
             args = [[[call.target, call.data] for call in self.calls]]
-            _, outputs = aggregate(args)
+            block_number, outputs = aggregate(args)
             outputs = ((None, output) for output in outputs)
         else:
             args = [self.require_success, [[call.target, call.data] for call in self.calls]]
-            _, _, outputs = aggregate(args)
+            block_number, _, outputs = aggregate(args)
 
 
-        result = {}
+        result = {'block_number': block_number}
         for call, (success, output) in zip(self.calls, outputs):
             result.update(call.decode_output(output, success))
 
